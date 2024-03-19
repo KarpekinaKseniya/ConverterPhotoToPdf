@@ -24,6 +24,7 @@ class Converter {
 
   private static final String WIDTH_KEY = "Width";
   private static final String HEIGHT_KEY = "Height";
+  private static final Float MAX_PAGE_SIZE = 14400f;
 
   public static void main(final String[] args) throws IOException, DocumentException {
     final Set<String> folders = listFoldersOrFiles(args[0], Files::isDirectory);
@@ -68,22 +69,22 @@ class Converter {
   }
 
   private static Map<String, Float> getMaxImageSize(final Set<String> images) throws IOException {
-    int maxWidth = Integer.MIN_VALUE;
-    int maxHeight = Integer.MIN_VALUE;
+    float maxWidth = Float.MIN_VALUE;
+    float maxHeight = Float.MIN_VALUE;
     for (final String image : images) {
       final BufferedImage bi = ImageIO.read(new File(image));
       final int width = bi.getWidth();
       final int height = bi.getHeight();
       if (maxHeight < height) {
-        maxHeight = height;
+        maxHeight = height + 50f;
       }
       if (maxWidth < width) {
-        maxWidth = width;
+        maxWidth = width + 50f;
       }
     }
     final Map<String, Float> map = new HashMap<>();
-    map.put(WIDTH_KEY, 50f + maxWidth);
-    map.put(HEIGHT_KEY, 50f + maxHeight);
+    map.put(WIDTH_KEY, maxWidth > MAX_PAGE_SIZE ? MAX_PAGE_SIZE : maxWidth);
+    map.put(HEIGHT_KEY, maxHeight > MAX_PAGE_SIZE ? MAX_PAGE_SIZE : maxHeight);
     return map;
   }
 
